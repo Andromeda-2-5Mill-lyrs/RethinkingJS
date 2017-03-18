@@ -1,5 +1,8 @@
 "use strict"
 const map = f => x => Array.prototype.map.call(x, f)
+const filter = f => x => Array.prototype.filter.call(x, f)
+const reduce = f => x => Array.prototype.reduce.call(x, f)
+const compose = (f, g) => x => f(g(x))
 
 // document.querySelectorAll (and similar methods) do not return an Array,
 // they return a NodeList and a NodeList does not contain a map method.
@@ -75,8 +78,6 @@ console.log(obj)
 // -------------------------------------------------------
 // Decoupling allows us to compose functions:
 
-const compose = (f, g) => x => f(g(x))
-
 const squareAndMultiplyByConstant = t => (9.81 * (t * t))
 const half = x => x / 2
 const mapSquareAndMultiplyByConstant = map(squareAndMultiplyByConstant)
@@ -109,3 +110,59 @@ console.log(mapSquareAndMultiplyByConstantThenMapHalf(obj))
 // => Sorry couldn't resist my next thought ... https://youtu.be/FEgSOt8QrQM
 // => ... it's a bit ancient, but a classic.
 // -------------------------------------------------------
+
+const tData = [100,99,98]
+
+console.log(reduce((acc, c) => acc+c)([3].concat(tData)))
+// => 300
+
+const arrData = ['A','n','y',' ','o','l','d',' ','i','r','o','n']
+
+
+console.log(reduce((acc,c) => acc+c)(arrData))
+// => give me every other character concated data
+console.log(reduce((acc,c,i) => i%2 ? acc : acc+c)(arrData))
+
+// map will map over an Object, so can I reduce an Object?
+const sumVals = reduce((acc,c) => acc+c)
+console.log(sumVals(obj))
+// => 15
+// Oh my hat, YES WE CAN! => That means I don't need Object.value(obj) anymore
+// it can be done with this new, decoupled, reduce function on steroids!! Brillent!
+// How awersome is that! How awersome is that! Everybody, how awersome is that!
+
+console.log(sumVals([100,99,98]))
+// => 297
+// => Oh my, I think I'll do something stupid and eat my hat. I feel like a kid
+// => with a new toy! A magic utility belt of a few functions that does it all!
+
+console.log(sumVals([3].concat([100,99,98])))
+// => 300
+
+// An alias to suit my context.
+const giveMeAstringIcommandYou = sumVals
+
+console.log(giveMeAstringIcommandYou(['A','n','y',' ','o','l','d',' ','i','r','o','n']))
+// => Any old iron
+
+// FORGET WHAT I SAID AT APPROX. LINE 100 re: The jury is still out. The verdict
+// is a BIG YES TO THESE DECOUPLED CURRIED FUNCTIONS - THE JACK OF ALL TRADES!
+// These new functions are magic. What a happenstance. Thanks Joel Thoms.
+// Remember this day, Sat, 18 Mar 2017 at 17:30 hrs GMT.
+// The day the penny dropped and a JavaScript treasure chest was opened.
+
+const happy = {
+  1: 'Awersome',
+  2: 'Is',
+  0: 'How',    // => *
+  3: 'That!',
+  length: 4  // => required + order determined by, required, numerical keys!!!
+  // Very interesting my dear Watson!
+}
+
+const giveMeAnArray = map(x => x)
+const giveMeAStringInjectSpaces = reduce((acc,c) => /[A-Z]/.test(c[0]) ? acc+' '+c : acc+c)
+
+const giveMeMyPhrase = compose(giveMeAStringInjectSpaces, giveMeAnArray)
+console.log(giveMeMyPhrase(happy))
+// How Awersome Is That!
